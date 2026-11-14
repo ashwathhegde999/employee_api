@@ -1,0 +1,6 @@
+---
+- name: Deploy employee API
+  hosts: appservers
+  become: true
+  roles:
+    - employee_api

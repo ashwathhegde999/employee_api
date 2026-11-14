@@ -1,0 +1,5 @@
+---
+- name: Restart employee-api
+  ansible.builtin.systemd:
+    name: employee-api
+    state: restarted

@@ -1,0 +1,3 @@
+
+[appservers]
+localhost ansible_connection=local

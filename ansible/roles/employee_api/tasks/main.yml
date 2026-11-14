@@ -1,0 +1,49 @@
+---
+- name: Install Python and venv
+  ansible.builtin.apt:
+    name:
+      - python3
+      - python3-venv
+      - python3-pip
+    state: present
+    update_cache: true
+
+- name: Create app directory
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Copy main.py
+  ansible.builtin.copy:
+    src: "{{ src_dir }}/main.py"
+    dest: "{{ app_dir }}/main.py"
+    mode: "0644"
+  notify: Restart employee-api
+
+- name: Copy requirements.txt
+  ansible.builtin.copy:
+    src: "{{ src_dir }}/requirements.txt"
+    dest: "{{ app_dir }}/requirements.txt"
+    mode: "0644"
+  notify: Restart employee-api
+
+- name: Install dependencies in a virtualenv
+  ansible.builtin.pip:
+    requirements: "{{ app_dir }}/requirements.txt"
+    virtualenv: "{{ app_dir }}/venv"
+    virtualenv_command: "{{ python_bin }} -m venv"
+
+- name: Create systemd service file
+  ansible.builtin.template:
+    src: employee-api.service.j2
+    dest: /etc/systemd/system/employee-api.service
+    mode: "0644"
+  notify: Restart employee-api
+
+- name: Enable and start the service
+  ansible.builtin.systemd:
+    name: employee-api
+    enabled: true
+    state: started
+    daemon_reload: true
