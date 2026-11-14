@@ -23,3 +23,7 @@ def get_employees():
 def add_employee(emp: Employee):
     employees_db.append(emp.model_dump())
     return emp
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "version": "2.0"}
